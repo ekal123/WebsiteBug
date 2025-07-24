@@ -302,7 +302,7 @@ async function sendBug() {
   resDiv.innerText = "";
 
 try {
-  const res = await fetch(`http://89.46.65.177:9206/ekalnotdev?&type=${selectedBug}&chatId=${target}@s.whatsapp.net}`);
+  const res = await fetch(`http://89.46.65.177:9206/ekalnotdev?&type=${selectedBug}&chatId=${encodeURIComponent(chatId)}`);
   const json = await res.json();
 
   showPopup(`Tachi Bug successfully sent to <b>${input}</b>`);
